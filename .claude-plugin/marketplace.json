@@ -1,0 +1,24 @@
+{
+  "name": "claude-skills",
+  "owner": {
+    "name": "Artur Khasanov"
+  },
+  "metadata": {
+    "description": "Collection of Claude Code skills and plugins for professional bug fixing",
+    "version": "1.0.0",
+    "homepage": "https://github.com/ar2r/claude-skills",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "fix-bug-pro",
+      "source": "./plugins/fix-bug-pro",
+      "description": "Comprehensive bug investigation, fix, and regression-proofing workflow for professional bug fixing",
+      "version": "1.0.0",
+      "author": { "name": "Artur Khasanov" },
+      "category": "development",
+      "keywords": ["bug-fixing", "debugging", "testing", "code-quality"],
+      "strict": true
+    }
+  ]
+}
