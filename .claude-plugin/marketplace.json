@@ -11,7 +11,7 @@
   },
   "plugins": [
     {
-      "name": "fix-bug-pro",
+      "name": "ar2r",
       "source": "./plugins/fix-bug-pro",
       "description": "Comprehensive bug investigation, fix, and regression-proofing workflow for professional bug fixing",
       "version": "1.0.0",
