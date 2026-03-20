@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Collection of Claude Code skills for bug fixing and GitLab merge request workflows",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "homepage": "https://github.com/ar2r/claude-skills",
     "pluginRoot": "./plugins"
   },
@@ -14,7 +14,7 @@
       "name": "dev-pro",
       "source": "./plugins/dev-pro",
       "description": "Bug-fixing and GitLab merge request workflows: investigate issues, add regression tests, create and describe MRs",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "author": { "name": "Artur Khasanov" },
       "category": "development",
       "keywords": ["bug-fixing", "debugging", "testing", "code-quality", "gitlab", "merge-requests", "code-review"],
