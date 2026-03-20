@@ -4,6 +4,16 @@ Workflow collection for professional bug fixing and GitLab merge request descrip
 
 ## Included Skills
 
+### `create-mr`
+
+Creates a Merge Request in GitLab from the current branch: pushes the branch, generates a structured description, and publishes the MR via `glab`.
+
+Typical triggers:
+
+- "Создай MR", "открой merge request", "запушь ветку и создай MR"
+- "Сделай PR/MR в GitLab", "залей ветку на ревью"
+- "create MR", "open pull request", "push and create MR"
+
 ### `fix-bug`
 
 Structured 7-phase workflow for bug fixing:
@@ -26,7 +36,7 @@ Typical triggers:
 
 ### `describe-mr`
 
-Generates structured Merge Request descriptions in Russian from GitLab metadata, commits, and diffs. Can publish the final text with `glab mr update`.
+Generates a structured Merge Request description in Russian for an **existing** MR from GitLab metadata, commits, and diffs. Can publish the final text with `glab mr update`. To create a new MR, use `create-mr`.
 
 Typical triggers:
 
@@ -59,6 +69,7 @@ Examples:
 Fix the null pointer exception in UserService
 Debug why the payment is failing
 This test is failing, can you fix it?
+Создай MR из текущей ветки
 /describe-mr https://gitlab.example.com/team/app/-/merge_requests/123
 Сгенерируй описание PR для ревью
 ```
@@ -66,8 +77,9 @@ This test is failing, can you fix it?
 ## Notes
 
 - `fix-bug` focuses on diagnosis, implementation, regression coverage, and rollback planning.
-- `describe-mr` focuses on review-ready Markdown and optionally publishing it to GitLab.
-- For MR publishing, `glab` should be installed and authenticated against the target GitLab instance.
+- `create-mr` pushes the current branch, generates a description, and publishes the MR to GitLab.
+- `describe-mr` generates a review-ready Markdown description for an existing MR and optionally publishes it to GitLab.
+- For MR workflows, `glab` should be installed and authenticated against the target GitLab instance.
 
 ## License
 
