@@ -1,6 +1,6 @@
 {
   "name": "dev-pro",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Bug-fixing and GitLab merge request workflows: investigate issues, add regression tests, create and describe MRs",
   "author": {
     "name": "Artur Khasanov"
