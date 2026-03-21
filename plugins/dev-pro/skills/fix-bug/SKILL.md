@@ -1,20 +1,21 @@
 ---
 name: fix-bug
 description: |
-  Comprehensive bug investigation, fix, and regression-proofing workflow.
-  Use this skill when the user reports a bug, asks to fix an error, mentions
-  failing tests, stack traces, unexpected behavior, or wants to debug an issue.
-  Also triggers on: "почини баг", "исправь ошибку", "найди причину", "debug",
+  Комплексный процесс расследования багов, их исправления и защиты от регрессий.
+  Используй этот скилл, когда пользователь сообщает о баге, просит исправить
+  ошибку, упоминает падающие тесты, stack trace, неожиданное поведение или
+  хочет отладить проблему.
+  Также срабатывает на: "почини баг", "исправь ошибку", "найди причину", "debug",
   "failing test", "not working", "crashes when", "throws error".
 ---
 
-# Bug Fixing Workflow (Pro Edition)
+# Процесс исправления багов (профессиональная версия)
 
-When this skill is invoked, **do not start changing code immediately**.
+Когда этот скилл вызван, **не начинай сразу менять код**.
 
-## Phase 1: Information Gathering
+## Фаза 1: Сбор информации
 
-First, ask the user for bug details in this structure:
+Сначала запроси у пользователя детали бага в такой структуре:
 
 ```
 Какую именно ошибку нужно исправить?
@@ -30,359 +31,361 @@ First, ask the user for bug details in this structure:
 8. Когда впервые появилось (недавние изменения, деплой)
 ```
 
-If information is incomplete, ask **short targeted follow-up questions**.
-Prioritize: stack traces > failing tests > logs > reproduction steps.
+Если информации недостаточно, задай **короткие точечные уточняющие вопросы**.
+Приоритет такой: stack trace > падающие тесты > логи > шаги воспроизведения.
 
 ---
 
-## Phase 2: Bug Categorization
+## Фаза 2: Категоризация бага
 
-After gathering initial info, **categorize the bug** to guide your approach:
+После сбора исходной информации **отнеси баг к категории**, чтобы выбрать
+подход к расследованию:
 
-| Category | Indicators | Key Investigation Tools |
-|----------|-----------|------------------------|
-| **Logic Error** | Wrong output, unexpected flow | Grep for related functions, trace execution |
-| **Null/Undefined** | NPE, undefined is not a function | Grep for null checks, find initialization |
-| **Type Mismatch** | Type errors, coercion issues | Check types, interfaces, contracts |
-| **Race Condition** | Intermittent, timing-related | Look for shared state, async patterns |
-| **Memory Issue** | Leaks, OOM, growing usage | Check resource cleanup, listeners, caches |
-| **Integration** | API failures, external services | Check contracts, timeouts, error handling |
-| **Performance** | Slow, timeout, high CPU/memory | Profile, check algorithms, N+1 queries |
-| **Security** | Injection, auth bypass, data leak | Check input validation, sanitization |
-| **Configuration** | Works locally, fails in env | Check env vars, configs, secrets |
+| Категория | Признаки | Основные инструменты расследования |
+|----------|----------|------------------------------------|
+| **Логическая ошибка** | Неверный результат, неожиданный поток выполнения | Grep по связанным функциям, трассировка выполнения |
+| **Null/Undefined** | NPE, `undefined is not a function` | Grep по null-check, поиск инициализации |
+| **Несоответствие типов** | Ошибки типов, проблемы с coercion | Проверка типов, интерфейсов, контрактов |
+| **Состояние гонки** | Проявляется не всегда, зависит от тайминга | Поиск общего состояния, async-паттернов |
+| **Проблема с памятью** | Утечки, OOM, растущее потребление | Проверка очистки ресурсов, listeners, cache |
+| **Интеграция** | Падения API, внешние сервисы | Проверка контрактов, таймаутов, error handling |
+| **Производительность** | Медленно, timeout, высокий CPU/память | Профилирование, проверка алгоритмов, N+1 запросов |
+| **Безопасность** | Инъекции, обход auth, утечка данных | Проверка валидации и sanitization входных данных |
+| **Конфигурация** | Локально работает, в окружении падает | Проверка env vars, конфигов, секретов |
 
-State your category hypothesis explicitly.
+Явно сформулируй гипотезу о категории бага.
 
 ---
 
-## Phase 3: Investigation Workflow
+## Фаза 3: Процесс расследования
 
-### 3.1 Code Pattern Search (Use Grep/Glob)
+### 3.1 Поиск паттернов в коде (используй Grep/Glob)
 
-Before diving into code, search for patterns:
+Перед тем как погружаться в код, найди релевантные паттерны:
 
 ```
-# Find related code
-Grep for: error message text, function names, class names
-Grep for: variable names from stack trace
-Glob for: files matching the module/component pattern
+# Найти связанный код
+Grep по: тексту ошибки, именам функций, именам классов
+Grep по: именам переменных из stack trace
+Glob по: файлам, подходящим под паттерн модуля/компонента
 
-# Find similar patterns (potential duplicate bugs)
-Grep for: same pattern in other files
+# Найти похожие паттерны (потенциальные дубликаты бага)
+Grep по: тому же паттерну в других файлах
 ```
 
-### 3.2 Git Analysis
+### 3.2 Анализ Git
 
-Use git to understand context:
+Используй git, чтобы понять контекст:
 
 ```bash
-# Recent changes to affected files
+# Недавние изменения в затронутых файлах
 git log --oneline -20 -- <file>
-git blame <file>  # Who wrote this, when, in what context
+git blame <file>  # Кто написал, когда и в каком контексте
 
-# Find when bug was introduced (if regression)
-git log -p -- <file> | head -500  # Recent changes with diff
+# Найти, когда баг был внесен (если это регрессия)
+git log -p -- <file> | head -500  # Недавние изменения с diff
 ```
 
-### 3.3 Reproduce or Infer
+### 3.3 Воспроизвести или сделать вывод по коду
 
-**Best case**: Reproduce the bug
-- Run failing tests: `npm test`, `pytest`, `go test`, etc.
-- Try the reproduction steps the user provided
-- Create a minimal reproduction case
+**Лучший вариант**: воспроизвести баг
+- Запусти падающие тесты: `npm test`, `pytest`, `go test` и т.д.
+- Повтори шаги воспроизведения, которые дал пользователь
+- Создай минимальный сценарий воспроизведения
 
-**If can't reproduce**:
-- Infer from code analysis
-- Check logs for patterns
-- Ask user for more details
+**Если воспроизвести не удается**:
+- Сделай выводы по анализу кода
+- Проверь логи на повторяющиеся паттерны
+- Запроси у пользователя дополнительные детали
 
-### 3.4 Root Cause Analysis
+### 3.4 Анализ первопричины
 
-Dig until you find the **true root cause**, not just a symptom:
+Копай, пока не найдешь **настоящую первопричину**, а не просто симптом:
 
-1. Start from error location (stack trace line)
-2. Trace backward: how did we get here?
-3. Check: what assumptions does this code make?
-4. Verify: are those assumptions always true?
-5. Find: the specific condition that breaks the assumption
+1. Начни с места ошибки (строка из stack trace)
+2. Пройди назад по цепочке: как код сюда пришел?
+3. Проверь: какие предположения делает этот код?
+4. Убедись: эти предположения всегда верны?
+5. Найди: конкретное условие, которое ломает предположение
 
-**Document your reasoning** - this helps reviewers understand the fix.
+**Документируй ход рассуждений**. Это помогает ревьюерам понять исправление.
 
-### 3.5 Advanced Investigation Techniques
+### 3.5 Продвинутые техники расследования
 
-#### For Intermittent/Heisenbugs:
-- Add extensive logging with timestamps
-- Check for non-deterministic code (random, Date.now(), concurrent access)
-- Look for external dependencies (APIs, databases, file system)
-- Check resource exhaustion (memory, connections, file handles)
-- Use `git bisect` to find when bug was introduced
+#### Для плавающих багов / heisenbug:
+- Добавь подробное логирование с таймстемпами
+- Проверь недетерминированный код (`random`, `Date.now()`, конкурентный доступ)
+- Ищи внешние зависимости (API, базы данных, файловая система)
+- Проверь истощение ресурсов (память, соединения, file handles)
+- Используй `git bisect`, чтобы найти момент внесения бага
 
-#### For Performance Issues:
-- Profile before guessing (use language-specific profilers)
-- Check algorithm complexity (O(n²) vs O(n))
-- Look for N+1 queries
-- Check network calls in loops
-- Measure, don't assume
+#### Для проблем производительности:
+- Сначала профилируй, а не гадай (используй профилировщики языка)
+- Проверь сложность алгоритмов (`O(n²)` против `O(n)`)
+- Ищи N+1 запросы
+- Проверь сетевые вызовы внутри циклов
+- Измеряй, а не предполагай
 
-#### For Integration Bugs:
-- Verify API contracts (request/response schemas)
-- Check authentication/authorization
-- Verify timeouts and retry logic
-- Check idempotency assumptions
-- Look for version mismatches
+#### Для интеграционных багов:
+- Проверь API-контракты (схемы request/response)
+- Проверь authentication/authorization
+- Убедись в корректности таймаутов и retry-логики
+- Проверь предположения об идемпотентности
+- Ищи несовпадение версий
 
-#### Use LSP for Code Intelligence:
-- Go to Definition - find where symbols are defined
-- Find References - find all usages
-- Find Implementations - find interface implementations
-- Call Hierarchy - understand call chains
-
----
-
-## Phase 3.5: Production Bug Specifics
-
-When the bug is in production (not local/dev environment):
-
-### Immediate Actions:
-1. **Assess impact** - how many users affected?
-2. **Check severity** - data loss? security? availability?
-3. **Decide**: hotfix now vs fix properly later
-
-### Investigation Constraints:
-- Can't always reproduce locally
-- Logs may be incomplete
-- Must be careful not to make things worse
-- May need to work under time pressure
-
-### Severity-Based Approach:
-
-| Severity | Approach | Timeline |
-|----------|----------|----------|
-| **Critical** (data loss, security breach) | Emergency hotfix, skip some validation | Minutes |
-| **High** (core feature broken) | Quick fix + proper follow-up | Hours |
-| **Medium** (feature degraded) | Normal fix cycle | Days |
-| **Low** (minor issue) | Backlog, fix when convenient | Weeks |
-
-### Communication Plan:
-- Notify stakeholders about critical issues
-- Provide status updates at regular intervals
-- Document for post-mortem if needed
-
-### Hotfix Checklist:
-- [ ] Minimal change that addresses immediate issue
-- [ ] Tested on staging if possible
-- [ ] Monitoring/alerting ready for deployment
-- [ ] Rollback plan documented
-- [ ] Post-mortem scheduled for proper fix
+#### Используй LSP для навигации по коду:
+- Go to Definition: найди, где определен символ
+- Find References: найди все использования
+- Find Implementations: найди реализации интерфейса
+- Call Hierarchy: пойми цепочки вызовов
 
 ---
 
-## Phase 4: Fix Implementation
+## Фаза 3.5: Особенности багов в продакшене
 
-### 4.1 Minimal Safe Fix
+Когда баг проявляется в продакшене (а не локально / в dev-среде):
 
-- Make the **smallest change** that fixes the root cause
-- Do NOT do unrelated refactoring
-- Do NOT change public interfaces unless absolutely necessary
-- If multiple fix options exist, choose the **safest** one
+### Немедленные действия:
+1. **Оцени влияние**: сколько пользователей затронуто?
+2. **Проверь критичность**: потеря данных? безопасность? доступность?
+3. **Реши**: срочный hotfix сейчас или полноценное исправление позже
 
-### 4.2 Consider Side Effects
+### Ограничения расследования:
+- Не всегда можно воспроизвести локально
+- Логи могут быть неполными
+- Нужно быть осторожным, чтобы не усугубить ситуацию
+- Возможно, придется работать под давлением по времени
 
-Before finalizing, assess:
+### Подход в зависимости от критичности:
 
-| Area | Questions to Ask |
-|------|-----------------|
-| **Regression** | Could this break existing functionality? |
-| **Performance** | Does this add overhead? Is it acceptable? |
-| **Security** | Does this introduce or fix a security issue? |
-| **Concurrency** | Are there thread-safety implications? |
-| **Data** | Could this corrupt or lose data? |
-| **API** | Does this change external contracts? |
-| **Dependencies** | Does this require package changes? |
+| Критичность | Подход | Срок |
+|-------------|--------|------|
+| **Critical** (потеря данных, breach безопасности) | Экстренный hotfix, часть проверок можно пропустить | Минуты |
+| **High** (сломана ключевая функциональность) | Быстрое исправление + корректное продолжение работ | Часы |
+| **Medium** (деградация функциональности) | Обычный цикл исправления | Дни |
+| **Low** (незначительная проблема) | Бэклог, исправить при удобном случае | Недели |
 
-### 4.3 Fix Validation Loop
+### План коммуникации:
+- Уведоми заинтересованные стороны о критических инцидентах
+- Давай регулярные статус-апдейты
+- При необходимости задокументируй все для post-mortem
 
-**If the first fix attempt doesn't work:**
-
-1. **Analyze failure** - Why didn't it work? What did you miss?
-2. **Re-examine assumptions** - Were your assumptions about root cause correct?
-3. **Consider alternatives** - Is there a simpler or safer approach?
-
-#### When Stuck:
-- Ask user for more context
-- Try to reproduce with additional logging
-- Consider if this is actually multiple bugs
-- Check for related issues in the same area
-
-#### Alternative Fix Strategies:
-
-| Risk Level | Strategy |
-|------------|----------|
-| Complex change | Break into smaller fixes |
-| High risk | Feature flag + gradual rollout |
-| Data change | Migration script + rollback |
-| Breaking API | Version bump + deprecation path |
-
-### 4.4 Pre-Commit Verification
-
-Before considering fix complete:
-- [ ] Bug is reproducible before fix
-- [ ] Bug is NOT reproducible after fix
-- [ ] No new errors introduced
-- [ ] Edge cases considered
+### Чеклист hotfix:
+- [ ] Минимальное изменение, которое закрывает срочную проблему
+- [ ] По возможности протестировано на staging
+- [ ] Мониторинг / алерты готовы к деплою
+- [ ] План отката задокументирован
+- [ ] Назначен post-mortem для полноценного исправления
 
 ---
 
-## Phase 5: Test Coverage
+## Фаза 4: Реализация исправления
 
-### 5.1 Why Tests Missed It
+### 4.1 Минимальное безопасное исправление
 
-Explain why existing tests didn't catch this bug:
-- Missing test case entirely?
-- Wrong test assumptions?
-- Mock hiding the real issue?
-- Edge case not covered?
+- Внеси **минимальное изменение**, которое устраняет первопричину
+- НЕ делай несвязанный рефакторинг
+- НЕ меняй публичные интерфейсы без крайней необходимости
+- Если есть несколько вариантов, выбирай **самый безопасный**
 
-### 5.2 Add Regression Tests
+### 4.2 Учитывай побочные эффекты
 
-Create tests that:
-- [ ] **Fail before the fix** - prove the bug exists
-- [ ] **Pass after the fix** - prove the fix works
-- [ ] **Cover edge cases** - prevent similar bugs
-- [ ] **Are minimal** - test the specific bug, not everything
+Перед финализацией оцени:
 
-For different bug types, add specific tests:
+| Область | О чем спросить себя |
+|---------|----------------------|
+| **Регрессии** | Может ли это сломать существующее поведение? |
+| **Производительность** | Появляются ли накладные расходы? Они приемлемы? |
+| **Безопасность** | Это исправляет или создает проблему безопасности? |
+| **Конкурентность** | Есть ли последствия для thread-safety? |
+| **Данные** | Может ли это повредить или потерять данные? |
+| **API** | Меняет ли это внешние контракты? |
+| **Зависимости** | Потребуются ли изменения пакетов? |
 
-| Bug Type | Test Approach |
-|----------|--------------|
-| Logic | Unit tests for edge cases |
-| Race Condition | Concurrent tests, flake detection |
-| Integration | Contract tests, mock external deps |
-| Performance | Benchmarks, load tests |
-| Security | Penetration tests, input fuzzing |
+### 4.3 Цикл валидации исправления
 
----
+**Если первая попытка исправления не сработала:**
 
-## Phase 6: Validation Checklist
+1. **Разбери неудачу**: почему не сработало? Что было упущено?
+2. **Перепроверь предположения**: была ли гипотеза о первопричине верной?
+3. **Рассмотри альтернативы**: есть ли более простой или безопасный путь?
 
-Run through this checklist before declaring done:
+#### Если застрял:
+- Запроси у пользователя больше контекста
+- Попробуй воспроизвести проблему с дополнительным логированием
+- Подумай, не состоит ли ситуация из нескольких багов
+- Проверь связанные проблемы в той же области
 
-### Code Quality
-- [ ] Fix addresses root cause, not symptom
-- [ ] No unrelated changes included
-- [ ] Code follows project style conventions
-- [ ] No hardcoded values that should be configurable
-- [ ] Error messages are helpful
+#### Альтернативные стратегии исправления:
 
-### Testing
-- [ ] All existing tests pass
-- [ ] New regression test(s) added
-- [ ] Edge cases covered
-- [ ] Manual reproduction verified (if applicable)
+| Уровень риска | Стратегия |
+|---------------|-----------|
+| Сложное изменение | Разбить на более мелкие исправления |
+| Высокий риск | Feature flag + постепенный rollout |
+| Изменение данных | Скрипт миграции + откат |
+| Ломающий API | Повышение версии + путь депрекации |
 
-### Impact Assessment
-- [ ] No breaking changes to public APIs
-- [ ] No security vulnerabilities introduced
-- [ ] Performance impact is acceptable
-- [ ] No new dependencies without approval
+### 4.4 Проверка перед коммитом
 
-### Documentation
-- [ ] Code comments updated if logic is non-obvious
-- [ ] API docs updated if behavior changed
-- [ ] README/CHANGELOG updated if user-facing
-- [ ] Error messages are user-friendly
+Прежде чем считать исправление завершенным:
+- [ ] Баг воспроизводится до исправления
+- [ ] Баг НЕ воспроизводится после исправления
+- [ ] Не появилось новых ошибок
+- [ ] Учтены edge cases
 
 ---
 
-## Phase 7: Rollback Plan
+## Фаза 5: Покрытие тестами
 
-Prepare for worst-case scenarios:
+### 5.1 Почему тесты это не поймали
 
-1. **What could go wrong?** - List potential issues
-2. **How to detect?** - Monitoring, alerts, user reports
-3. **How to rollback?** - Revert commit, feature flag, hotfix
-4. **Data migration?** - If DB changes, is it reversible?
+Объясни, почему существующие тесты не обнаружили этот баг:
 
-If the fix is risky:
-- Consider a feature flag
-- Deploy to staging first
-- Have monitoring alerts ready
-- Document rollback steps
+- Полностью отсутствовал нужный тест-кейс?
+- Тесты опирались на неверные предположения?
+- Моки скрывали реальную проблему?
+- Не был покрыт edge case?
+
+### 5.2 Добавь регрессионные тесты
+
+Создай тесты, которые:
+- [ ] **Падают до исправления**: доказывают существование бага
+- [ ] **Проходят после исправления**: доказывают, что исправление работает
+- [ ] **Покрывают edge cases**: предотвращают похожие баги
+- [ ] **Остаются минимальными**: проверяют конкретный баг, а не всё подряд
+
+Для разных типов багов добавляй соответствующие тесты:
+
+| Тип бага | Подход к тестированию |
+|----------|------------------------|
+| Логика | Unit-тесты на edge cases |
+| Состояние гонки | Конкурентные тесты, проверка flaky-поведения |
+| Интеграция | Контрактные тесты, моки внешних зависимостей |
+| Производительность | Бенчмарки, нагрузочные тесты |
+| Безопасность | Penetration tests, fuzzing входных данных |
 
 ---
 
-## Output Format
+## Фаза 6: Чеклист валидации
 
-Return findings in this structure:
+Пройди по этому чеклисту, прежде чем объявлять работу завершенной:
+
+### Качество кода
+- [ ] Исправление закрывает первопричину, а не симптом
+- [ ] Нет несвязанных изменений
+- [ ] Код соответствует стилю проекта
+- [ ] Нет захардкоженных значений, которые должны конфигурироваться
+- [ ] Сообщения об ошибках полезны
+
+### Тестирование
+- [ ] Все существующие тесты проходят
+- [ ] Добавлены новые регрессионные тесты
+- [ ] Покрыты edge cases
+- [ ] Ручное воспроизведение проверено (если применимо)
+
+### Оценка влияния
+- [ ] Нет ломающих изменений в публичных API
+- [ ] Не внесены новые уязвимости
+- [ ] Влияние на производительность приемлемо
+- [ ] Нет новых зависимостей без согласования
+
+### Документация
+- [ ] Комментарии в коде обновлены, если логика неочевидна
+- [ ] API-документация обновлена, если поведение изменилось
+- [ ] README/CHANGELOG обновлены, если изменения заметны пользователю
+- [ ] Сообщения об ошибках понятны пользователю
+
+---
+
+## Фаза 7: План отката
+
+Подготовься к худшему сценарию:
+
+1. **Что может пойти не так?** Составь список потенциальных проблем
+2. **Как это обнаружить?** Мониторинг, алерты, сообщения пользователей
+3. **Как откатиться?** Revert коммита, feature flag, hotfix
+4. **Есть миграция данных?** Если были изменения в БД, можно ли их откатить?
+
+Если исправление рискованное:
+- Рассмотри feature flag
+- Сначала выкати на staging
+- Подготовь мониторинг и алерты
+- Задокументируй шаги отката
+
+---
+
+## Формат ответа
+
+Возвращай результат в такой структуре:
 
 ```
-## 1. Bug Summary
-- Category: [from categorization table]
-- Severity: [Critical/High/Medium/Low]
-- Affected component: [module/service/endpoint]
+## 1. Краткое описание бага
+- Категория: [из таблицы категоризации]
+- Критичность: [Critical/High/Medium/Low]
+- Затронутый компонент: [module/service/endpoint]
 
-## 2. Reproduction
-- Steps to reproduce
-- Observed behavior
-- Expected behavior
+## 2. Воспроизведение
+- Шаги воспроизведения
+- Наблюдаемое поведение
+- Ожидаемое поведение
 
-## 3. Root Cause
-- Primary cause: [what's actually wrong]
-- Contributing factors: [what made it possible]
-- Code location: [file:line]
+## 3. Первопричина
+- Основная причина: [что именно сломано]
+- Сопутствующие факторы: [что сделало это возможным]
+- Место в коде: [file:line]
 
-## 4. Why Tests Missed It
-- [explanation]
+## 4. Почему тесты это не поймали
+- [объяснение]
 
-## 5. Fix Implemented
-- Change summary: [what was changed]
-- Files modified: [list]
-- Diff size: [lines changed]
+## 5. Реализованное исправление
+- Кратко об изменении: [что было изменено]
+- Измененные файлы: [список]
+- Размер diff: [число измененных строк]
 
-## 6. Test Updates
-- New tests added: [describe]
-- Existing tests modified: [if any]
+## 6. Обновление тестов
+- Какие новые тесты добавлены: [описание]
+- Какие существующие тесты изменены: [если есть]
 
-## 7. Impact Assessment
-- Regression risk: [Low/Medium/High] - [reason]
-- Performance impact: [None/Minor/Major] - [details]
-- Security implications: [None/Concern] - [details]
+## 7. Оценка влияния
+- Риск регрессии: [Low/Medium/High] - [причина]
+- Влияние на производительность: [None/Minor/Major] - [детали]
+- Влияние на безопасность: [None/Concern] - [детали]
 
-## 8. Validation Steps
-- [ ] All tests pass
-- [ ] Manual verification done
-- [ ] Edge cases covered
+## 8. Шаги валидации
+- [ ] Все тесты проходят
+- [ ] Ручная проверка выполнена
+- [ ] Edge cases покрыты
 
-## 9. Rollback Plan
-- Risk level: [Low/Medium/High]
-- Rollback method: [git revert / feature flag / hotfix]
-- Monitoring: [what to watch]
+## 9. План отката
+- Уровень риска: [Low/Medium/High]
+- Способ отката: [git revert / feature flag / hotfix]
+- Мониторинг: [за чем следить]
 
-## 10. Follow-up Recommendations
-- [optional improvements, tech debt, related issues]
+## 10. Рекомендации на будущее
+- [опциональные улучшения, техдолг, связанные проблемы]
 ```
 
 ---
 
-## Quick Reference: Tools to Use
+## Быстрая справка: какие инструменты использовать
 
-| Task | Tool |
-|------|------|
-| Find files | Glob |
-| Search code | Grep |
-| Read code | Read |
-| Edit code | Edit |
-| Run tests | Bash (npm test, pytest, etc.) |
-| Git history | Bash (git log, git blame) |
-| Debug | Bash (node inspect, pdb, delve) |
+| Задача | Инструмент |
+|--------|------------|
+| Найти файлы | Glob |
+| Искать по коду | Grep |
+| Читать код | Read |
+| Редактировать код | Edit |
+| Запускать тесты | Bash (`npm test`, `pytest` и т.д.) |
+| Смотреть историю Git | Bash (`git log`, `git blame`) |
+| Отлаживать | Bash (`node inspect`, `pdb`, `delve`) |
 
 ---
 
-## Remember
+## Помни
 
-- **Minimal diffs** - smallest safe change
-- **Root cause** - not just symptoms
-- **Regression tests** - prevent recurrence
-- **Document reasoning** - help reviewers
-- **Validate thoroughly** - use the checklist
-- **Plan for failure** - have a rollback plan
+- **Минимальные diff**: самое маленькое безопасное изменение
+- **Первопричина**: исправляй ее, а не только симптомы
+- **Регрессионные тесты**: не дай багу вернуться
+- **Документируй рассуждения**: это помогает ревьюерам
+- **Тщательно валидируй**: используй чеклист
+- **Планируй сбой заранее**: подготовь план отката
