@@ -200,6 +200,10 @@ git diff origin/<target_branch>...HEAD -- <path/to/file>
 
 ## Шаг 7 — Создай MR
 
+Создавай MR с включёнными настройками:
+- `Delete source branch` (`--remove-source-branch=true`)
+- `Squash commits` (`--squash-before-merge=true`)
+
 ```bash
 cat > /tmp/mr_desc.md << 'EOF'
 <mr_description>
@@ -211,6 +215,8 @@ ARGS=(mr create
   --target-branch "<target_branch>"
   --title "<mr_title>"
   --description "$(cat /tmp/mr_desc.md)"
+  --remove-source-branch=true
+  --squash-before-merge=true
 )
 [ "<is_draft>" = "true" ] && ARGS+=(--draft)
 
