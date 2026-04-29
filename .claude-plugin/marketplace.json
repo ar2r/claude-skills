@@ -1,12 +1,12 @@
 {
-  "name": "claude-skills",
+  "name": "ar2r-agent-skills",
   "owner": {
     "name": "Artur Khasanov"
   },
   "metadata": {
-    "description": "Collection of Claude Code skills for bug fixing and GitLab merge request workflows",
-    "version": "2.0.10",
-    "homepage": "https://github.com/ar2r/claude-skills",
+    "description": "Collection of AI agent skills for bug fixing and GitLab merge request workflows",
+    "version": "2.0.11",
+    "homepage": "https://github.com/ar2r/agent-skills",
     "pluginRoot": "./plugins"
   },
   "plugins": [
@@ -14,11 +14,14 @@
       "name": "dev-pro",
       "source": "./plugins/dev-pro",
       "description": "Bug-fixing and GitLab merge request workflows: investigate issues, add regression tests, create and describe MRs",
-      "version": "2.0.10",
+      "version": "2.0.11",
       "author": { "name": "Artur Khasanov" },
+      "repository": "https://github.com/ar2r/agent-skills",
+      "license": "MIT",
       "category": "development",
       "keywords": ["bug-fixing", "debugging", "testing", "code-quality", "gitlab", "merge-requests", "code-review"],
-      "strict": true
+      "skills": "./skills/",
+      "strict": false
     }
   ]
 }

@@ -5,9 +5,10 @@
 ## Установка в Claude code
 
 ```
-/plugins add https://github.com/ar2r/agent-skills
+/plugin marketplace add ar2r/agent-skills
+/plugin install dev-pro@ar2r-agent-skills
 # Обновление
-/plugins update dev-pro
+/plugin marketplace update ar2r-agent-skills
 ```
 
 ## Установка в Qwen CLI (Nessy CLI)
@@ -72,11 +73,10 @@ nessy extensions update --all
 ## Структура
 
 ```
-claude-skills/
+agent-skills/
 ├── .claude-plugin/marketplace.json
 └── plugins/dev-pro/
     ├── README.md
-    ├── .claude-plugin/plugin.json
     └── skills/
         ├── fix-bug/
         │   └── SKILL.md
@@ -85,5 +85,7 @@ claude-skills/
         └── describe-mr/
             └── SKILL.md
 ```
+
+Формат репозитория описан в документации Claude Code: [plugin marketplace format](https://code.claude.com/docs/en/plugin-marketplaces) и [plugin structure reference](https://code.claude.com/docs/en/plugins-reference).
 
 MIT License · Artur Khasanov

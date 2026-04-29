@@ -9,7 +9,6 @@ A collection of **Claude Code skills and plugins**. Skills are instruction files
 ```
 .claude-plugin/marketplace.json          # Top-level marketplace registry
 plugins/<plugin-name>/
-  .claude-plugin/plugin.json             # Plugin metadata (name, version)
   README.md
   skills/<skill-name>/
     SKILL.md                             # The skill itself (YAML frontmatter + Markdown)
@@ -36,8 +35,8 @@ The `description` field is the triggering signal — write it to match the natur
 
 ### Plugin metadata files
 
-- `marketplace.json` — top-level registry; lists all plugins with `name`, `source` path, `version`, `description`. Update when adding or renaming plugins.
-- `plugin.json` — per-plugin metadata; mirrors key fields from `marketplace.json`. Keep versions in sync between these two files.
+- `marketplace.json` — top-level Claude Code marketplace registry; lists plugins, source paths, metadata, and component paths. Update when adding or renaming plugins.
+- Plugin-local `.claude-plugin/plugin.json` is optional. This repo keeps plugin metadata in the marketplace entry instead, with `"strict": false`, to avoid duplicate manifests.
 
 ### Evals
 
@@ -49,15 +48,16 @@ The `description` field is the triggering signal — write it to match the natur
 - `describe-mr` skill output: **Russian** (including all section headers). Technical terms (API, endpoint, middleware) stay in English.
 - `fix-bug` skill output: English, with Russian phrases accepted as input triggers.
 
-### Plugin `strict: true`
+### Plugin `strict: false`
 
-The `dev-pro` plugin is marked `"strict": true` in `marketplace.json`. This means Claude should follow the skill workflow exactly, not improvise.
+The `dev-pro` plugin is marked `"strict": false` in `marketplace.json`. This makes the marketplace entry the full plugin definition, so the plugin does not need its own `.claude-plugin/plugin.json`.
 
 ## Installation command (for reference)
 
 ```bash
-/plugins add https://github.com/ar2r/claude-skills
-/plugins update dev-pro
+/plugin marketplace add ar2r/agent-skills
+/plugin install dev-pro@ar2r-agent-skills
+/plugin marketplace update ar2r-agent-skills
 ```
 
 ## External dependencies

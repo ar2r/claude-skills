@@ -50,7 +50,8 @@ Typical triggers:
 ### Option 1: Via Claude Code CLI (Recommended)
 
 ```bash
-/plugins add https://github.com/ar2r/claude-skills
+/plugin marketplace add ar2r/agent-skills
+/plugin install dev-pro@ar2r-agent-skills
 ```
 
 ### Option 2: Manual Installation
