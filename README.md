@@ -14,14 +14,23 @@
 ## Установка в Qwen CLI (Nessy CLI)
 
 ```
-qwen extensions install https://github.com/ar2r/agent-skills
+qwen extensions install https://github.com/ar2r/agent-skills:dev-pro --ref=master
 # or
-nessy extensions install https://github.com/ar2r/agent-skills
+nessy extensions install https://github.com/ar2r/agent-skills:dev-pro --ref=master
 
 # Обновление
 qwen extensions update --all
 # or
 nessy extensions update --all
+```
+
+Репозиторий содержит нативный `qwen-extension.json`, поэтому Qwen/Nessy устанавливает его как обновляемый git extension, а не как сконвертированный Claude plugin.
+
+Если ранее extension был установлен до появления `qwen-extension.json` и в `/extensions manage` показывается `not updatable`, переустановите его один раз:
+
+```
+qwen extensions uninstall dev-pro
+qwen extensions install https://github.com/ar2r/agent-skills:dev-pro --ref=master
 ```
 
 ## Доступные плагины
@@ -74,8 +83,11 @@ nessy extensions update --all
 
 ```
 agent-skills/
+├── qwen-extension.json
+├── skills -> plugins/dev-pro/skills
 ├── .claude-plugin/marketplace.json
 └── plugins/dev-pro/
+    ├── qwen-extension.json
     ├── README.md
     └── skills/
         ├── fix-bug/

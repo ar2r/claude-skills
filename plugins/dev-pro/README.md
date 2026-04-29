@@ -62,6 +62,15 @@ Copy the plugin directory to your Claude plugins folder:
 cp -r plugins/dev-pro ~/.claude/plugins/
 ```
 
+### Qwen / Nessy CLI
+
+Install from the repository as a native, updatable Qwen extension:
+
+```bash
+qwen extensions install https://github.com/ar2r/agent-skills:dev-pro --ref=master
+qwen extensions update dev-pro
+```
+
 ## Usage
 
 Examples:
