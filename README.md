@@ -14,9 +14,9 @@
 ## Установка в Qwen CLI (Nessy CLI)
 
 ```
-qwen extensions install https://github.com/ar2r/agent-skills/ --ref=master
+qwen extensions install git@github.com:ar2r/agent-skills.git --ref=master
 # or
-nessy extensions install https://github.com/ar2r/agent-skills/ --ref=master
+nessy extensions install git@github.com:ar2r/agent-skills.git --ref=master
 
 # Обновление
 qwen extensions update --all
@@ -32,10 +32,10 @@ nessy extensions update --all
 qwen extensions uninstall dev-pro
 qwen extensions uninstall ar2r-agent-skills
 qwen extensions uninstall ar2r-skills
-qwen extensions install https://github.com/ar2r/agent-skills/ --ref=master
+qwen extensions install git@github.com:ar2r/agent-skills.git --ref=master
 ```
 
-Важно: для Qwen/Nessy используется URL с завершающим `/` и без `:ar2r-skills`. Это заставляет CLI установить репозиторий как native git extension по `qwen-extension.json`, а не как Claude marketplace plugin.
+Важно: для Qwen/Nessy используется SSH git URL без `:ar2r-skills`. HTTPS URL этого репозитория Qwen классифицирует как Claude marketplace из-за `.claude-plugin/marketplace.json`, поэтому такая установка будет показываться как `not updatable`.
 
 ## Доступные плагины
 
