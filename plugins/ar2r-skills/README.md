@@ -67,7 +67,7 @@ cp -r plugins/ar2r-skills ~/.claude/plugins/
 Install from the repository as a native, updatable Qwen extension:
 
 ```bash
-qwen extensions install https://github.com/ar2r/agent-skills:ar2r-skills --ref=master
+qwen extensions install https://github.com/ar2r/agent-skills/ --ref=master
 qwen extensions update ar2r-skills
 ```
 
