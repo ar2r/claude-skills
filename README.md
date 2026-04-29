@@ -5,7 +5,7 @@
 ## Установка
 
 ```
-/plugins add https://github.com/ar2r/claude-skills
+/plugins add https://github.com/ar2r/agent-skills
 ```
 
 ## Обновление
