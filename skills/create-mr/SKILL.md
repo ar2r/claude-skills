@@ -94,10 +94,26 @@ git fetch origin --prune 2>/dev/null
 RELEASE_BRANCHES=$(git branch -r | grep -v ' -> ' | grep -E "origin/release-${JIRA_TICKET}-" | sed 's|[[:space:]]*origin/||')
 ```
 
-Если `RELEASE_BRANCHES` не пуст — задай пользователю **один вопрос**:
+Если `RELEASE_BRANCHES` не пуст — задай пользователю **один вопрос** через `ask_user_question`:
 
-> 🌿 В какую ветку создавать MR?
-> Варианты: `<target_branch>` (по умолчанию), `<каждая найденная release-ветка>`
+```python
+ask_user_question([{
+    "question": "В какую ветку создавать MR?",
+    "header": "Целевая ветка",
+    "multiSelect": false,
+    "options": [
+        {
+            "label": "<target_branch> (по умолчанию)",
+            "description": "Основная ветка (main/master)"
+        },
+        {
+            "label": "<release-branch-1>",
+            "description": "Release-ветка для <JIRA_TICKET>"
+        }
+        # Добавь опцию для каждой найденной release-ветки
+    ]
+}])
+```
 
 Сохрани выбор как **target_branch**.
 
