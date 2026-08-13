@@ -33,6 +33,8 @@ qwen extensions update --all
 | **fix-bug** | Профессиональный workflow для расследования багов, безопасного фикса и регрессионного покрытия |
 | **create-mr** | Создаёт MR в GitLab из текущей ветки: один вопрос про draft для нового MR, затем автогенерация заголовка и описания; если MR уже есть, обновляет его описание |
 | **describe-mr** | Генерация структурированного описания для существующего MR/PR на русском языке с опцией публикации через `glab` |
+| **review-mr** | Автоматическое ревью GitLab MR с анализом кода и публикацией комментариев |
+| **validate-review** | Скептическая проверка одного замечания код-ревью: доказывает CONFIRMED/FALSE POSITIVE/NEEDS CONTEXT на фактическом коде, оценивает трудоемкость и impact, предлагает план доработок |
 
 ## Триггеры
 
@@ -66,21 +68,40 @@ qwen extensions update --all
 упоминает "changelog ветки" или "текст для MR/PR"
 ```
 
+### `review-mr`
+
+Активируется, когда пользователь:
+
+```
+просит проверить/отревьюить GitLab MR
+"проверь MR", "сделай ревью пул-реквеста", "прогони код-ревью по MR"
+```
+
+### `validate-review`
+
+Активируется, когда пользователь:
+
+```
+просит привалидировать замечание код-ревью
+"проверить ревью-комментарий", "нужно ли это чинить"
+вставляет текст ревью/комментария с просьбой оценить нужность правки
+```
+
 ## Структура
 
 ```
 agent-skills/
+├── README.md
+├── CLAUDE.md
 ├── qwen-extension.json
+├── nessy-extension.json
 ├── .claude-plugin/marketplace.json
-└── plugins/ar2r-skills/
-    ├── README.md
-    └── skills/
-        ├── fix-bug/
-        │   └── SKILL.md
-        ├── create-mr/
-        │   └── SKILL.md
-        └── describe-mr/
-            └── SKILL.md
+└── skills/
+    ├── fix-bug/SKILL.md
+    ├── create-mr/SKILL.md
+    ├── describe-mr/SKILL.md
+    ├── review-mr/SKILL.md
+    └── validate-review/SKILL.md
 ```
 
 Формат репозитория описан в документации Claude Code: [plugin marketplace format](https://code.claude.com/docs/en/plugin-marketplaces) и [plugin structure reference](https://code.claude.com/docs/en/plugins-reference).

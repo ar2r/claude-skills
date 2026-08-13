@@ -85,7 +85,7 @@ GitLab аутентификация настраивается через glab C
 
 ## Требования
 
-- glab CLI установлен (`brew install glab`)
+- glab CLI установлен (`brew install glab`) — либо доступна обёртка `dp glab` (тот же синтаксис команд), которую можно использовать вместо прямого вызова `glab`
 - GitLab Personal Access Token с правом `api`
 - Доступ к GitLab по сети
 

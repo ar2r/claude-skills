@@ -52,7 +52,7 @@ skills/<skill-name>/
 
 ## External dependencies
 
-- `glab` — required by `create-mr` and `describe-mr` to interact with GitLab (`glab mr create`, `glab mr update`, `glab mr list`, `glab mr view`). Must be installed and authenticated (`glab auth login`).
+- `glab` — required by `create-mr`, `describe-mr`, and `review-mr` to interact with GitLab (`glab mr create`, `glab mr update`, `glab mr list`, `glab mr view`). Must be installed and authenticated (`glab auth login`). Wrapper `dp glab` (same command syntax) may be used instead of calling `glab` directly, if available.
 
 ## Installation (for reference)
 
