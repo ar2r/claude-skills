@@ -301,7 +301,12 @@ git diff origin/<target_branch>...HEAD -- <path/to/file>
 
 Если MR уже существует, обнови только его описание.
 
-Сначала запиши `mr_description` в файл. Не используй heredoc (`cat > ... << EOF`) — он падает в sandbox и жёсткий `/tmp` может быть закрыт на запись. Используй Write tool или `cat > ${TMPDIR:-/tmp}/mr_desc.md << 'EOF'`:
+Сначала запиши `mr_description` в файл:
+
+1. Выполни в Bash `echo "${TMPDIR:-/tmp}/mr_desc.md"` — получишь абсолютный путь temp-файла.
+2. Запиши файл по этому абсолютному пути через **Write tool**.
+
+Write tool не раскрывает переменные окружения: подставляй путь из шага 1, а не литеральный `/tmp/mr_desc.md` — в sandbox-окружениях (tclaude) корневой `/tmp` закрыт на запись, доступен только `$TMPDIR`. Heredoc (`cat > ... << EOF`) тоже не используй — в zsh-sandbox он падает.
 
 ```
 <mr_description>
@@ -319,7 +324,7 @@ $GLAB mr update <iid> \
 - `Delete source branch` (`--remove-source-branch=true`)
 - `Squash commits` (`--squash-before-merge=true`)
 
-Запиши `mr_description` в `${TMPDIR:-/tmp}/mr_desc.md` (Write tool, не heredoc):
+Запиши `mr_description` в `${TMPDIR:-/tmp}/mr_desc.md` тем же способом, что и в блоке обновления выше: Bash `echo` для абсолютного пути → Write tool (не heredoc, не литеральный `/tmp`):
 
 ```
 <mr_description>

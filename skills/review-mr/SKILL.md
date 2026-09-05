@@ -284,12 +284,14 @@ glab api projects/<PROJECT_ID>/merge_requests/<MR_NUMBER>/versions | jq '.[0] | 
 
 #### Шаг 8.2: Создать inline комментарий
 
-Для каждого выбранного замечания создай inline комментарий через GitLab API:
+Для каждого выбранного замечания создай inline комментарий через GitLab API.
 
-```bash
-glab api -X POST projects/<PROJECT_ID>/merge_requests/<MR_NUMBER>/discussions \
-  -H "Content-Type: application/json" \
-  --input - <<'EOF'
+Не используй heredoc (`--input - <<'EOF'`) — в zsh-sandbox он падает. Вместо этого:
+
+1. Выполни в Bash `echo "${TMPDIR:-/tmp}/review_comment.json"` — получишь абсолютный путь temp-файла.
+2. Запиши JSON по этому пути через **Write tool** (Write tool не раскрывает переменные окружения; литеральный `/tmp/...` в sandbox-окружениях закрыт на запись):
+
+```json
 {
   "body": "🔴 [CRITICAL] Security: SEC-1\n\n**Файл:** src/api/handler.py **Строка:** 42\n\n**Описание:** SQL injection уязвимость в сыром запросе. Использование f-string для формирования SQL запроса позволяет выполнить произвольный SQL код.\n\n**Предложение:** Используйте параметризованные запросы\n\n**Проблемный код:**\n```python\nquery = f\"SELECT * FROM users WHERE id = {user_id}\"\ncursor.execute(query)\n```\n\n**Исправленный вариант:**\n```python\nquery = \"SELECT * FROM users WHERE id = %s\"\ncursor.execute(query, (user_id,))\n```\n\n---\n🤖 Автоматическое ревью от Claude Code\nПолитика: security-policy.md",
   "position": {
@@ -302,7 +304,14 @@ glab api -X POST projects/<PROJECT_ID>/merge_requests/<MR_NUMBER>/discussions \
     "new_line": 42
   }
 }
-EOF
+```
+
+3. Затем отправь:
+
+```bash
+glab api -X POST projects/<PROJECT_ID>/merge_requests/<MR_NUMBER>/discussions \
+  -H "Content-Type: application/json" \
+  --input "${TMPDIR:-/tmp}/review_comment.json"
 ```
 
 **Параметры position:**
